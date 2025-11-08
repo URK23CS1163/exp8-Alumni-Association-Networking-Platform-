@@ -1,0 +1,1 @@
+# Alumni Association Networking Platform\nRun backend: cd server && npm install && npm run dev\nRun frontend: cd client && npm install && npm run dev
