@@ -19,7 +19,7 @@ services:
       - key: FRONTEND_BASE_URL
         sync: false
 
-  - type: static
+  - type: static_site
     name: alumni-frontend
     region: oregon
     plan: free
@@ -30,4 +30,5 @@ services:
       - key: NODE_VERSION
         value: 18
       - key: VITE_API_URL
+        value: https://alumni-api.render.com
         sync: false
