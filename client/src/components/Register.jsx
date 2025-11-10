@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../lib/api';
+import { Link } from 'react-router-dom';
 
 export default function Register(){
   const [form, setForm] = useState({ name: '', email: '', username: '', password: '', confirmPassword: '' });
@@ -9,8 +10,9 @@ export default function Register(){
       alert('Please fill all required fields');
       return;
     }
-    if (form.password.length < 6) {
-      alert('Password must be at least 6 characters');
+    const strong = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+    if (!strong.test(form.password)) {
+      alert('Password must be 8+ characters and include letters and numbers');
       return;
     }
     if (form.password !== form.confirmPassword) {
@@ -18,13 +20,17 @@ export default function Register(){
       return;
     }
     try{
-      await axios.post('http://localhost:5000/api/auth/register', {
+      const res = await api.post('/api/auth/register', {
         name: form.name,
         email: form.email,
         username: form.username,
         password: form.password,
       });
-      alert('Registered — now login');
+      if (res.data?.verifyToken) {
+        alert('Registered. Save this verify token: ' + res.data.verifyToken);
+      } else {
+        alert('Registered — now login');
+      }
       window.location.href = '/login';
     } catch (err){ alert(err.response?.data?.message || 'Error'); }
   };
@@ -38,6 +44,9 @@ export default function Register(){
         <input className="input" placeholder='Password' type='password' value={form.password} onChange={e=>setForm({...form,password:e.target.value})} required/>
         <input className="input" placeholder='Confirm Password' type='password' value={form.confirmPassword} onChange={e=>setForm({...form,confirmPassword:e.target.value})} required/>
         <button className="button" type='submit'>Register</button>
+        <div className="muted" style={{textAlign:'center'}}>
+          Already have an account? <Link to="/login">Login</Link>
+        </div>
       </form>
     </div>
   );

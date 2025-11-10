@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from './lib/api';
+import { Link } from 'react-router-dom';
 
 export default function App(){
   const [profiles, setProfiles] = useState([]);
   const [records, setRecords] = useState([]);
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
+  const logout = () => { localStorage.removeItem('token'); window.location.href = '/login'; };
   const SAMPLE_PROFILES = [
     { _id: 'ex1', name: 'Aarav Sharma', graduationYear: 2020, department: 'Computer Science', currentCompany: 'TechNova', skills: ['React','Node.js','MongoDB'] },
     { _id: 'ex2', name: 'Priya Verma', graduationYear: 2019, department: 'Electronics', currentCompany: 'CircuLab', skills: ['Embedded','C++','IoT'] },
@@ -17,18 +19,18 @@ export default function App(){
     { _id: 'r3', title: 'Job Posting', note: 'Junior Developer at TechNova' },
   ];
   useEffect(()=>{
-    axios.get('http://localhost:5000/api/profiles')
+    api.get('/api/profiles')
       .then(res=> setProfiles(res.data))
-      .catch(console.error)
-    axios.get('http://localhost:5000/api/records')
+      .catch(()=>{})
+    api.get('/api/records')
       .then(res=> setRecords(res.data))
-      .catch(console.error)
+      .catch(()=>{})
   },[]);
   const addRecord = async (e) => {
     e.preventDefault();
     if (!title.trim()) return;
     try {
-      const res = await axios.post('http://localhost:5000/api/records', { title, note });
+      const res = await api.post('/api/records', { title, note });
       setRecords(prev => [res.data, ...prev]);
       setTitle("");
       setNote("");
@@ -36,7 +38,7 @@ export default function App(){
   };
   const deleteRecord = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/records/${id}`);
+      await api.delete(`/api/records/${id}`);
       setRecords(prev => prev.filter(r => r._id !== id));
     } catch (err) { console.error(err); }
   };
@@ -50,9 +52,10 @@ export default function App(){
           <span className="subtitle">Connect • Mentor • Grow</span>
         </div>
         <nav className="nav">
-          <a href='/'>Home</a>
-          <a href='/register' className='btn-link'>Register</a>
-          <a href='/login' className='btn-link'>Login</a>
+          <Link to='/home'>Home</Link>
+          <Link to='/register' className='btn-link'>Register</Link>
+          <Link to='/login' className='btn-link'>Login</Link>
+          <Link to='/dev-mailbox' className='btn-link'>Dev Mailbox</Link>
         </nav>
       </header>
 

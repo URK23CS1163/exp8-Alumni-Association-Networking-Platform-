@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../lib/api';
+import { Link } from 'react-router-dom';
 
 export default function Login(){
   const [form, setForm] = useState({ identifier: '', password: '' });
@@ -10,10 +11,10 @@ export default function Login(){
         alert('Please enter username/email and password');
         return;
       }
-      const res = await axios.post('http://localhost:5000/api/auth/login', form);
+      const res = await api.post('/api/auth/login', form);
       localStorage.setItem('token', res.data.token);
       alert('Logged in');
-      window.location.href = '/';
+      window.location.href = '/home';
     } catch (err){ alert(err.response?.data?.message || 'Error'); }
   };
   return (
@@ -23,6 +24,12 @@ export default function Login(){
         <input className="input" placeholder='Username or Email' value={form.identifier} onChange={e=>setForm({...form,identifier:e.target.value})} required/>
         <input className="input" placeholder='Password' type='password' value={form.password} onChange={e=>setForm({...form,password:e.target.value})} required/>
         <button className="button" type='submit'>Login</button>
+        <div className="muted" style={{textAlign:'center'}}>
+          No account? <Link to="/register">Sign up</Link>
+        </div>
+        <div className="muted" style={{textAlign:'center'}}>
+          <Link to="/forgot">Forgot password?</Link>
+        </div>
       </form>
     </div>
   );
